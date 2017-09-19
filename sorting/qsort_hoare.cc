@@ -11,20 +11,18 @@ void printArr(int arr[N]) {
 	cout << endl;
 }
 
-int partition(int arr[N], int s, int e) {
+int partitionS(int arr[N], int s, int e) {
+	int pivot = arr[s];
 	int l = s + 1;
 	int r = e;
-	while (l < r) {
-		while (arr[s] > arr[l]) { l++;}
-		while (arr[s] < arr[r]) { r--;}
-		if (l < r) {
+	while (l <= r) {
+		while (arr[l] <= pivot) { l++;}
+		while (arr[r] > pivot) { r--;}
+		if (l <= r) {
 			swap(arr[l], arr[r]);
 		}
 	}
-	// * make a note of this condition check *
-	if (arr[s] > arr[r]) {
-		swap(arr[s], arr[r]);
-	}
+	swap(arr[s], arr[r]);
 	return r;
 }
 
@@ -32,7 +30,7 @@ void qsort(int arr[N], int s, int e) {
 	if (s > e) {
 		return;
 	}
-	int pi = partition(arr, s, e);
+	int pi = partitionS(arr, s, e);
 	qsort(arr, s, pi - 1);
 	qsort(arr, pi + 1, e);
 }

@@ -1,33 +1,84 @@
 #include <iostream>
+#include <array>
 
 using namespace std;
 
-#define N 4
-
-bool isPlaceable(bool squares[N][N], int n, int row, int col) {
-	for (int i = 0; i < n; i++) {
-		//Check horizontally and vertically
-		if (squares[row][i] ||
-		    squares[i][col]) {
+bool isSafe(bool **board, int n, int row, int col) {
+	for (int i = 0; i < col; i++) {
+		//Check horizontally
+		if (board[row][i]) {
 			return false;
 		}
-		//Check diagonally
-		if (i > 0) {
-			if ((col - i >= 0 && row - i >= 0 && squares[row - i][col - i]) ||
-			    (col + i < n && row + i < n && squares[row + i][col + i]) ||
-			    (col - i >= 0 && row + i < n && squares[row + i][col - i]) ||
-			    (col + i < n && row - i >= 0 && squares[row - i][col + i])) {
-				return false;
-			}
+	}
+
+	//Check diagonally down
+	for (int i = row, j = col; i >= 0 && j >= 0; i--, j--) {
+		if (board[i][j]) {
+			return false;
+		}
+	}
+
+	//Check diagonally up
+	for (int i = row, j = col; i < n && j >= 0; i++, j--) {
+		if (board[i][j]) {
+			return false;
 		}
 	}
 	return true;
 }
 
-int main() {
-	bool squares[N][N] = {};
-	squares[2][1] = true;
-	cout << isPlaceable(squares, N, 3, 3) << endl;
+void prettyPrint(bool **board, int n) {
+	for (int j = 0; j < n; j++) {
+		cout << "+-";
+	}
+	cout << "+" << endl;
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++) {
+			board[i][j] ? cout << "|*" : cout << "| ";
+		}
+		cout << "|" << endl;
+		for (int j = 0; j < n; j++) {
+			cout << "+-";
+		}
+		cout << "+" << endl;
+	}
+	cout << endl;
+}
 
+void printValidAr(bool **board, int n, int ps, int col) {
+	cout << ps << endl;
+	if (ps == n) {
+		prettyPrint(board, n);
+	}
+
+	if (col == n) {
+		return;
+	}
+
+	for (int i = 0; i < n; i++) {
+		if (isSafe(board, n, i, col)) {
+			board[i][col] = true;
+			ps++;
+			printValidAr(board, n, ps, col + 1);
+			board[i][col] = false;
+			ps--;
+		}
+	}
+}
+
+int main() {
+	int n;
+	cin >> n;
+	
+	bool **board = new bool * [n];
+	for (int i = 0; i < n; i++) {
+		board[i] = new bool[n]();
+	}
+	printValidAr(board, n, 0, 0);
+
+	for (int i = 0; i < n; i++) {
+		delete[] board[i];
+	}
+	delete[] board;
 	return 0;
 }
