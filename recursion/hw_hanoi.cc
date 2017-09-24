@@ -18,27 +18,24 @@ static stack <int> s3;
 static int cnt = 0;
 
 void
-moveTower(stack <int> &main, stack <int> &temp, stack <int> &temp1) {
-	cnt++;
-	if (cnt > 100) {
-		return;
-	}
+moveTower(int disk, stack <int> &main, stack <int> &dest, stack <int> &spare) {
 
+	if (disk == 0) {
+		int top = main.top();
+		main.pop();
+		dest.push(top);
+	} else {
+		moveTower(disk - 1, main, spare, dest);
+		int top = main.top();
+		main.pop();
+		dest.push(top);
+		moveTower(disk - 1, spare, dest, main);
+	}
 	printRod(s1);
 	printRod(s2);
 	printRod(s3);
 	cout << "------------" << endl;
 
-	int top = main.top();
-	main.pop();
-	if (top == 5) {
-		temp.push(top);
-	} else {
-		moveTower(main, temp1, temp);
-		top = main.top();
-		temp.push(top);
-		moveTower(temp1, temp, main);
-	}
 }
 
 int
@@ -50,6 +47,6 @@ main()
 	s1.push(2);
 	s1.push(1);
 
-	moveTower(s1, s2, s3);
+	moveTower(4, s1, s2, s3);
 	return 0;
 }

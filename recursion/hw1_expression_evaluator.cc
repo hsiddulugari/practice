@@ -1,26 +1,55 @@
 #include <iostream>
 #include <string>
+#include <stack>
 
 using namespace std;
 
-void printEvalExp
+void printStack(const stack <string> &operands)
+{
+	string temp = "";
+	for (stack <string> t = operands; !t.empty(); t.pop()) {
+		temp = t.top() + " " + temp;
+	}
+	cout << temp << endl;
+}
 
-void printEvalExp(string arr, int n, int k) {
+void printEvalExp(string arr, int n, int k, stack <string> &operands) {
 	if (k == n) {
+		printStack(operands);
 		return;
 	}
 	
-	cout << arr.substr(0, k) << " " << arr.substr(k, n) << endl;
-	printEvalExp(arr, n, k+1);
-	cout << arr.substr(0, k) << "+" << arr.substr(k, n) << endl;
-	printEvalExp(arr, n, k+1);
-	cout << arr.substr(0, k) << "*" << arr.substr(k, n) << endl;
-	printEvalExp(arr, n, k+1);
+	for (int i = k; i < n; i++) {
+		cout << "----------------------->" << k << " " << i << endl;
+		operands.push(arr.substr(k, i-k+1));
+		printEvalExp(arr, n, i+1, operands);
+		operands.pop();
+		if (!operands.empty()) {
+			operands.push("*");
+		}
+		operands.push(arr.substr(k, i-k+1));
+		printEvalExp(arr, n, i+1, operands);
+		operands.pop();
+		if (!operands.empty()) {
+			operands.pop();
+		}
+		if (!operands.empty()) {
+			operands.push("+");
+		}
+		operands.push(arr.substr(k, i-k+1));
+		printEvalExp(arr, n, i+1, operands);
+		operands.pop();
+		if (!operands.empty()) {
+			operands.pop();
+		}
+	}
 }
 
 int main() {
 	string arr = "1234";
-	printEvalExp(arr, arr.size(), 1);
+	stack <string> operands;
+
+	printEvalExp(arr, arr.size(), 0, operands);
 
 	return 0;
 }
